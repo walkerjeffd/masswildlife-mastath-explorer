@@ -1,0 +1,40 @@
+.v-slide-group-item--active {
+  background-color: white;
+  border-radius: 0 !important;
+}
+
+/*
+override odd behavior of leaflet tooltips
+when <LTooltip> is present, the <LCircleMarker>
+element receives outline-style: auto on click
+*/
+path.leaflet-interactive {
+  outline-style: none !important;
+}
+
+.leaflet-container {
+  background: #FFF !important;
+}
+
+.font-size-larger {
+  font-size: larger;
+}
+
+.font-size-smaller {
+  font-size: x-small;
+}
+
+.splash {
+  height: calc(100vh - 64px);
+}
+
+.splash > img {
+  object-position: top;
+}
+
+.hero {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+  overflow-y: auto;
+  max-height: calc(100vh - 100px - 64px);
+  border-radius: 8px;
+}
