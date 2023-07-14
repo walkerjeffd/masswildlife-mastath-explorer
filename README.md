@@ -1,16 +1,15 @@
 MA Stream Temperature and Thermal Habitat Explorer
 ==================================================
 
-Live Website https://walkerenvres.com/dev/masswildlife/
-
 Prepared by: Jeffrey D Walker, PhD (<jeff@walkerenvres.com>, [Walker Environmental Research LLC](https://walkerenvres.com))  
 For: [MA Division of Fisheries and Wildlife (MassWildlife)](https://www.mass.gov/orgs/division-of-fisheries-and-wildlife)
 
 **Links**
 
-Report and Output Datasets: [10.5281/zenodo.8145195](https://dx.doi.org/10.5281/zenodo.8145195)  
-Model Source Code: [@walkerjeffd/masswildlife-mastath](https://github.com/walkerjeffd/masswildlife-mastath)  
-Website Source Code: [@walkerjeffd/masswildlife-mastath-explorer](https://github.com/walkerjeffd/masswildlife-mastath-explorer) (this repo)
+- **Live Website: https://walkerenvres.com/dev/masswildlife/**
+- Report and Output Datasets: [10.5281/zenodo.8145195](https://dx.doi.org/10.5281/zenodo.8145195)
+- Model Source Code: [@walkerjeffd/masswildlife-mastath](https://github.com/walkerjeffd/masswildlife-mastath)
+- Website Source Code: [@walkerjeffd/masswildlife-mastath-explorer](https://github.com/walkerjeffd/masswildlife-mastath-explorer) (this repo)
 
 ## Overview
 
