@@ -1,10 +1,10 @@
 <script setup lang="ts">
 // @ts-nocheck
-import type L from 'leaflet'
+import L from 'leaflet'
 import type { Ref } from 'vue'
 import { ref, computed, watch } from 'vue'
 import { schemeSpectral } from 'd3-scale-chromatic'
-import { scaleQuantize, scaleThreshold } from 'd3-scale'
+import { scaleThreshold } from 'd3-scale'
 import {
   LMap,
   LControlLayers,
@@ -24,7 +24,7 @@ const year: Ref<'BASE' | '2030' | '2050' | '2070' | '2090'> = ref('BASE')
 const delta = ref(false)
 const prob: Ref<'Q10' | 'Q50' | 'Q90'> = ref('Q50')
 const field = computed(() => {
-  return `${year.value}_${prob.value}`
+  return year.value === 'BASE' ? year.value : `${year.value}_${prob.value}`
 })
 
 watch([field, delta, param], () => {
@@ -34,10 +34,13 @@ watch([field, delta, param], () => {
   drawFlowlines()
 })
 
-const deltaColorScale = scaleQuantize()
-  .domain([0, 5])
-  .range(schemeSpectral[6].toReversed())
-
+// const deltaColorScale = scaleQuantize()
+//   .domain([0, 4.5])
+//   .range(schemeSpectral[9].toReversed())
+const deltaColorScale = scaleThreshold()
+  .domain([1, 1.5, 2, 2.5, 3, 3.5, 4])
+  .range(schemeSpectral[8].toReversed())
+window.deltaColorScale = deltaColorScale
 const tempColorScale = scaleThreshold()
   .domain([16, 18, 20, 22, 24, 26, 28])
   .range(schemeSpectral[8].toReversed())
@@ -46,47 +49,184 @@ const thermalColorScale = scaleThreshold()
   .domain([18.45, 22.3])
   .range(['#2C7BB6', '#ABD9E9', '#FDAE61'])
 
-function restyleLayer (layer: L.Layer) {
-  let tempValue = layer.feature.properties[field.value]
+const thermalClass: String<'Cold' | 'Cool' | 'Warm'> = function (value) {
+  if (value < 18.45) {
+    return 'Cold'
+  } else if (value < 22.3) {
+    return 'Cool'
+  } else {
+    return 'Warm'
+  }
+}
+
+function getFlowlineColor (feature) {
+  let tempValue = feature.properties[field.value]
+  let color = '#CCC'
   let colorScale = tempColorScale
   if (param.value == 'TEMP' && delta.value) {
-    tempValue = tempValue - layer.feature.properties[`BASE_${prob.value}`]
+    tempValue = tempValue - feature.properties.BASE
     colorScale = deltaColorScale
-  }
-  if (param.value == 'THERMAL') {
+  } else if (param.value == 'THERMAL') {
     colorScale = thermalColorScale
   }
+  if (tempValue) {
+    color = colorScale(tempValue)
+  }
+  return color
+}
+
+function restyleLayer (layer: L.Layer) {
   layer.setStyle({
     fillOpacity: 1,
     weight: 2,
-    color: colorScale(tempValue)
+    color: getFlowlineColor(layer.feature)
   })
 }
 
+function flowlinePopupTable (feature) {
+  if (!feature?.properties?.BASE) return `
+<div class="text-body-1">Flowline COMID: ${feature.id}</div>
+<div class="text-body-2">GNIS Name: ${feature.properties.GNIS_NAME || 'N/A'}</div>
+<div class="text-body-2 mt-4">Predictions not available for this reach</div>
+`
+  return `
+<div class="text-body-1">Flowline COMID: ${feature.id}</div>
+<div class="text-body-2">GNIS Name: ${feature.properties.GNIS_NAME || 'N/A'}</div>
+<div class="v-table v-theme--theme mt-4">
+  <div class="v-table__wrapper">
+    <table class="table-predictions">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Mean July<br/>Temp (&deg;C)</th>
+          <th>Change from<br/>Baseline (&deg;C)</th>
+          <th>Thermal<br/>Class</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Baseline</td>
+          <td style="text-align:end">${feature.properties.BASE.toFixed(1)}</td>
+          <td>--</td>
+          <td>
+            <span class="thermal-${thermalClass(feature.properties.BASE).toLowerCase()}">${thermalClass(feature.properties.BASE)}</span>
+          </td>
+        </tr>
+        <tr>
+          <td>2030</td>
+          <td>
+            ${feature.properties['2030_Q50'].toFixed(1)}
+            <br/>
+            (${feature.properties['2030_Q10'].toFixed(1)} - ${feature.properties['2030_Q90'].toFixed(1)})
+          </td>
+          <td>
+            ${(feature.properties['2030_Q50']-feature.properties['BASE']).toFixed(1)}
+            <br/>
+            (${(feature.properties['2030_Q10']-feature.properties['BASE']).toFixed(1)} -
+            ${(feature.properties['2030_Q90']-feature.properties['BASE']).toFixed(1)})
+          </td>
+          <td>
+            <span class="thermal-${thermalClass(feature.properties['2030_Q50']).toLowerCase()}">
+              ${thermalClass(feature.properties['2030_Q50'])}
+            </span>
+            <br/>
+            (${thermalClass(feature.properties['2030_Q10'])} - ${thermalClass(feature.properties['2030_Q90'])})
+          </td>
+        </tr>
+        <tr>
+          <td>2050</td>
+          <td>
+            ${feature.properties['2050_Q50'].toFixed(1)}
+            <br/>
+            (${feature.properties['2050_Q10'].toFixed(1)} - ${feature.properties['2050_Q90'].toFixed(1)})
+          </td>
+          <td>
+            ${(feature.properties['2050_Q50']-feature.properties['BASE']).toFixed(1)}
+            <br/>
+            (${(feature.properties['2050_Q10']-feature.properties['BASE']).toFixed(1)} -
+            ${(feature.properties['2050_Q90']-feature.properties['BASE']).toFixed(1)})
+          </td>
+          <td>
+            <span class="thermal-${thermalClass(feature.properties['2050_Q50']).toLowerCase()}">
+              ${thermalClass(feature.properties['2050_Q50'])}
+            </span>
+            <br/>
+            (${thermalClass(feature.properties['2050_Q10'])} - ${thermalClass(feature.properties['2050_Q90'])})
+          </td>
+        </tr>
+        <tr>
+          <td>2070</td>
+          <td>
+            ${feature.properties['2070_Q50'].toFixed(1)}
+            <br/>
+            (${feature.properties['2070_Q10'].toFixed(1)} - ${feature.properties['2070_Q90'].toFixed(1)})
+          </td>
+          <td>
+            ${(feature.properties['2070_Q50']-feature.properties['BASE']).toFixed(1)}
+            <br/>
+            (${(feature.properties['2070_Q10']-feature.properties['BASE']).toFixed(1)} -
+            ${(feature.properties['2070_Q90']-feature.properties['BASE']).toFixed(1)})
+          </td>
+          <td>
+            <span class="thermal-${thermalClass(feature.properties['2070_Q50']).toLowerCase()}">
+              ${thermalClass(feature.properties['2070_Q50'])}
+            </span>
+            <br/>
+            (${thermalClass(feature.properties['2070_Q10'])} - ${thermalClass(feature.properties['2070_Q90'])})
+          </td>
+        </tr>
+        <tr>
+          <td>2090</td>
+          <td>
+            ${feature.properties['2090_Q50'].toFixed(1)}
+            <br/>
+            (${feature.properties['2090_Q10'].toFixed(1)} - ${feature.properties['2090_Q90'].toFixed(1)})
+          </td>
+          <td>
+            ${(feature.properties['2090_Q50']-feature.properties['BASE']).toFixed(1)}
+            <br/>
+            (${(feature.properties['2090_Q10']-feature.properties['BASE']).toFixed(1)} -
+            ${(feature.properties['2090_Q90']-feature.properties['BASE']).toFixed(1)})
+          </td>
+          <td>
+            <span class="thermal-${thermalClass(feature.properties['2090_Q50']).toLowerCase()}">
+              ${thermalClass(feature.properties['2090_Q50'])}
+            </span>
+            <br/>
+            (${thermalClass(feature.properties['2090_Q10'])} - ${thermalClass(feature.properties['2090_Q90'])})
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="text-caption">Median projections with (10th - 90th) percentile range in parentheses.</div>
+  </div>
+</div>
+  `
+}
+
 const basins = {
-  style: () => {
-    return {
-      className: 'basin',
-      fillOpacity: 0,
-      color: 'gray',
-      weight: 1
-    }
-  },
+  data: null,
   options: {
     id: 'basins',
     url: 'data/basins.geojson',
     title: 'Major Basins (HUC8)',
     visible: true,
     interactive: true,
+    style: () => {
+      return {
+        className: 'basin',
+        fillOpacity: 0,
+        color: 'gray',
+        weight: 1
+      }
+    },
     onEachFeature: function (feature: { properties: { basin: string, huc8: string } }, layer: L.Layer) {
-      layer.bindTooltip(`${feature.properties.basin} (${feature.properties.huc8})`, { sticky: true })
+      layer.bindTooltip(`<div class="text-body-1">${feature.properties.basin}</div><div class="text-caption">HUC8: ${feature.properties.huc8}</div>`, { sticky: true })
       layer.on({
         mouseover: () => {
           layer.setStyle({
-            fillOpacity: 0.2,
             weight: 2,
-            color: 'black',
-            fillColor: 'gray'
+            color: 'black'
           })
         },
         mouseout: () => {
@@ -102,23 +242,34 @@ const basins = {
 }
 
 const flowlines = {
-  style: (layer: L.Layer) => {
-    const value = layer.properties[field.value]
-    return {
-      fillOpacity: 1,
-      color: tempColorScale(value),
-      weight: 2
-    }
-  },
+  data: null,
   options: {
     id: 'flowlines',
     url: 'data/flowlines.geojson',
     title: 'Flowlines',
     visible: true,
-    interactive: false
-    // onEachFeature: function (feature, layer: L.Layer) {
-    //   layer.bindTooltip(`${feature.properties.COMID}`, { sticky: true })
-    // }
+    interactive: true,
+    top: true,
+    style: (layer: L.Layer) => {
+      return {
+        fillOpacity: 1,
+        color: getFlowlineColor(layer),
+        weight: 2
+      }
+    },
+    onEachFeature: function (feature, layer: L.Layer) {
+      layer.bindTooltip(`${flowlinePopupTable(feature)}`, { sticky: true })
+      layer.on({
+        mouseover: () => {
+          layer.setStyle({
+            weight: 4
+          })
+        },
+        mouseout: () => {
+          restyleLayer(layer)
+        }
+      })
+    }
   },
   mapLayer: null
 }
@@ -129,30 +280,22 @@ function drawFlowlines () {
   })
 }
 
-async function fetchLayer (layer: L.GeoJSON) {
-  // @ts-ignore
+async function createLayer (layer) {
   const url = layer.options.url
   const response = await fetch(url)
   const geojson = await response.json()
-  layer.addData(geojson)
+  return new L.GeoJSON(geojson, layer.options)
 }
-// layer.getLayers()[0].setStyle
+
 async function mapReady (map: L.Map) {
   loading.value = true
-  // await sleep(1000)
-  // console.log(basins.options.url)
-  // map.on('overlayadd', overlayAdd)
-  // map.on('overlayremove', overlayRemove)
-  map.eachLayer(async (d) => {
-    // @ts-ignore
-    if (d.options?.visible) {
-      // @ts-ignore
-      await fetchLayer(d)
-      if (d.options.id === "flowlines") {
-        flowlines.mapLayer = d
-      }
-    }
-  })
+
+  const basinsLayer = await createLayer(basins)
+  const flowlinesLayer = await createLayer(flowlines)
+  flowlines.mapLayer = flowlinesLayer
+  map.addLayer(basinsLayer)
+  map.addLayer(flowlinesLayer)
+
   loading.value = false
 }
 
@@ -171,7 +314,7 @@ async function mapReady (map: L.Map) {
                 <template v-slot:activator="{ props }">
                   <v-btn icon="$info" variant="flat" size="x-small" v-bind="props"></v-btn>
                 </template>
-                <span v-html="'Baseline = 1971-2000<br/>30-Yr Averaging Periods:<br/>&nbsp;&nbsp;2030 = 2015 - 2045<br/>&nbsp;&nbsp;2050 = 2035 - 2065<br/>&nbsp;&nbsp;2070 = 2055 - 2085<br/>&nbsp;&nbsp;2090 = 2080 - 2100'"></span>
+                <span v-html="'Baseline = 1971-2000 (30-yr Normal)<br/>Climate Projection Periods:<br/>&nbsp;&nbsp;&nbsp;&nbsp;2030 = 2015 - 2045<br/>&nbsp;&nbsp;&nbsp;&nbsp;2050 = 2035 - 2065<br/>&nbsp;&nbsp;&nbsp;&nbsp;2070 = 2055 - 2085<br/>&nbsp;&nbsp;&nbsp;&nbsp;2090 = 2080 - 2100'"></span>
               </v-tooltip>
             </div>
           </div>
@@ -193,19 +336,17 @@ async function mapReady (map: L.Map) {
                 <template v-slot:activator="{ props }">
                   <v-btn icon="$info" variant="flat" size="x-small" v-bind="props"></v-btn>
                 </template>
-                <span v-html="'Median and lower/upper bounds of<br>air temperature projections based<br>on stochastic weather generator'"></span>
+                <span v-html="'Show median or lower/upper bounds<br>based on air temperature projections<br>from stochastic weather generator<br><br>Note: Disabled when viewing Baseline'"></span>
               </v-tooltip>
             </div>
           </div>
           <div class="d-flex">
-            <v-btn-toggle v-model="prob" mandatory divided class="flex-grow-1">
+            <v-btn-toggle v-model="prob" mandatory divided class="flex-grow-1" :disabled="year === 'BASE'">
               <v-btn variant="outlined" class="flex-grow-1" value="Q10">10th Percentile</v-btn>
               <v-btn variant="outlined" class="flex-grow-1" value="Q50">Median</v-btn>
               <v-btn variant="outlined" class="flex-grow-1" value="Q90">90th Percentile</v-btn>
             </v-btn-toggle>
           </div>
-
-          <!-- <v-divider class="my-8"></v-divider> -->
 
           <div class="text-h6 mb-2 mt-8">Parameter</div>
           <div class="d-flex">
@@ -215,16 +356,16 @@ async function mapReady (map: L.Map) {
             </v-btn-toggle>
           </div>
 
-          <!-- <v-checkbox
+          <v-checkbox
             v-model="delta"
-            label="Show Change Relative to Baseline"
+            label="Show Temperature Increase Relative to Baseline"
             :disabled="year == 'BASE' || param == 'THERMAL'"
-          ></v-checkbox> -->
+          ></v-checkbox>
 
-          <div class="my-12"></div>
+          <div class="my-8"></div>
 
           <div v-if="param == 'TEMP' && !delta">
-            <svg width="400" height="50" viewBox="0,0,400,50" style="overflow: visible; display: block;">
+            <svg width="400" height="60" viewBox="0,0,400,60" style="overflow: visible; display: block;">
               <g>
                 <rect x="0" y="18" width="49" height="16" fill="#3288bd"></rect>
                 <rect x="50" y="18" width="49" height="16" fill="#66c2a5"></rect>
@@ -268,9 +409,60 @@ async function mapReady (map: L.Map) {
                   <line stroke="currentColor" y2="5"></line>
                   <text fill="currentColor" y="10" dy="0.71em">&ge; 28</text>
                 </g>
-                  <text x="0" y="-30" fill="currentColor" text-anchor="start" font-weight="bold" class="title" font-size="14">
-                    Mean July Water Temperature (&deg;C)
-                  </text>
+                <text x="0" y="-30" fill="currentColor" text-anchor="start" font-weight="bold" class="title" font-size="14">
+                  Mean July Water Temperature (&deg;C)
+                </text>
+              </g>
+            </svg>
+          </div>
+          <div v-if="param == 'TEMP' && delta">
+            <svg width="400" height="60" viewBox="0,0,400,60" style="overflow: visible; display: block;">
+              <g>
+                <rect x="0" y="18" width="49" height="16" fill="#3288bd"></rect>
+                <rect x="50" y="18" width="49" height="16" fill="#66c2a5"></rect>
+                <rect x="100" y="18" width="49" height="16" fill="#abdda4"></rect>
+                <rect x="150" y="18" width="49" height="16" fill="#e6f598"></rect>
+                <rect x="200" y="18" width="49" height="16" fill="#fee08b"></rect>
+                <rect x="250" y="18" width="49" height="16" fill="#fdae61"></rect>
+                <rect x="300" y="18" width="49" height="16" fill="#f46d43"></rect>
+                <rect x="350" y="18" width="49" height="16" fill="#d53e4f"></rect>
+              </g>
+              <g transform="translate(0,34)" fill="none" font-size="12" font-family="sans-serif" text-anchor="middle">
+                <g class="tick" opacity="1" transform="translate(25,0)">
+                  <line stroke="currentColor" y2="5"></line>
+                  <text fill="currentColor" y="10" dy="0.71em">&lt; 1</text>
+                </g>
+                <g class="tick" opacity="1" transform="translate(75,0)">
+                  <line stroke="currentColor" y2="5"></line>
+                  <text fill="currentColor" y="10" dy="0.71em">1-1.5</text>
+                </g>
+                <g class="tick" opacity="1" transform="translate(125,0)">
+                  <line stroke="currentColor" y2="5"></line>
+                  <text fill="currentColor" y="10" dy="0.71em">1.5-2</text>
+                </g>
+                <g class="tick" opacity="1" transform="translate(175,0)">
+                  <line stroke="currentColor" y2="5"></line>
+                  <text fill="currentColor" y="10" dy="0.71em">2-2.5</text>
+                </g>
+                <g class="tick" opacity="1" transform="translate(225,0)">
+                  <line stroke="currentColor" y2="5"></line>
+                  <text fill="currentColor" y="10" dy="0.71em">2.5-3</text>
+                </g>
+                <g class="tick" opacity="1" transform="translate(275,0)">
+                  <line stroke="currentColor" y2="5"></line>
+                  <text fill="currentColor" y="10" dy="0.71em">3-3.5</text>
+                </g>
+                <g class="tick" opacity="1" transform="translate(325,0)">
+                  <line stroke="currentColor" y2="5"></line>
+                  <text fill="currentColor" y="10" dy="0.71em">3.5-4</text>
+                </g>
+                <g class="tick" opacity="1" transform="translate(375,0)">
+                  <line stroke="currentColor" y2="5"></line>
+                  <text fill="currentColor" y="10" dy="0.71em">&ge; 4</text>
+                </g>
+                <text x="0" y="-30" fill="currentColor" text-anchor="start" font-weight="bold" class="title" font-size="14">
+                  Increase in Mean July Water Temperature (&deg;C)
+                </text>
               </g>
             </svg>
           </div>
@@ -325,11 +517,13 @@ async function mapReady (map: L.Map) {
             layer-type="base"
           ></LTileLayer>
           <LGeoJson
+            v-if="basins.data"
             name="basins"
             :options="basins.options"
             :options-style="basins.style as L.StyleFunction"
           ></LGeoJson>
           <LGeoJson
+            v-if="flowlines.data"
             name="flowlines"
             :options="flowlines.options"
             :options-style="flowlines.style as L.StyleFunction"
@@ -348,7 +542,7 @@ async function mapReady (map: L.Map) {
   </div>
 </template>
 
-<style scoped>
+<style>
 .explorer {
   display: flex;
   flex-direction: row;
@@ -381,4 +575,39 @@ async function mapReady (map: L.Map) {
   right: 0;
   z-index:1000;
 }
+
+.table-predictions-container {
+  width: 300px;;
+  overflow-x: auto;
+}
+
+.table-predictions {
+  display: block !important;
+  margin-bottom: 10px;
+}
+
+.table-predictions th {
+  text-align: center !important;
+}
+
+.table-predictions td {
+  text-align: center !important;
+}
+
+.table-predictions span.thermal-cold {
+  padding: 2px;
+  background-color: #2C7BB6 !important;
+  color: white;
+}
+
+.table-predictions span.thermal-cool {
+  padding: 2px;
+  background-color: #ABD9E9 !important;
+}
+
+.table-predictions span.thermal-warm {
+  padding: 2px;
+  background-color: #FDAE61 !important;
+}
+
 </style>
