@@ -25,7 +25,10 @@
                 <v-icon class="mr-2">mdi-book-outline</v-icon> Report and dataset available here: <a class="ml-1" href="https://doi.org/10.5281/zenodo.8145195">doi:10.5281/zenodo.8145195</a>
               </div>
               <div class="d-flex align-content-center mt-2">
-                <v-icon class="mr-2">mdi-github</v-icon> Source code available here: <a class="ml-1" href="https://github.com/walkerjeffd/masswildlife-stath-model">github.com/walkerjeffd/masswildlife-stath-model</a>
+                <v-icon class="mr-2">mdi-github</v-icon> Data/model source code available here: <a class="ml-1" href="https://github.com/walkerjeffd/masswildlife-mastath">github.com/walkerjeffd/masswildlife-mastath</a>
+              </div>
+              <div class="d-flex align-content-center mt-2">
+                <v-icon class="mr-2">mdi-github</v-icon> Website source code available here: <a class="ml-1" href="https://github.com/walkerjeffd/masswildlife-mastath-explorer">github.com/walkerjeffd/masswildlife-mastath-explorer</a>
               </div>
             </v-alert>
 

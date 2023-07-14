@@ -1,27 +1,39 @@
-# masswildlife-thermal-habitat
+MA Stream Temperature and Thermal Habitat Explorer
+==================================================
 
-This template should help get you started developing with Vue 3 in Vite.
+Live Website https://walkerenvres.com/dev/masswildlife/
 
-## Recommended IDE Setup
+Prepared by: Jeffrey D Walker, PhD (<jeff@walkerenvres.com>, [Walker Environmental Research LLC](https://walkerenvres.com))  
+For: [MA Division of Fisheries and Wildlife (MassWildlife)](https://www.mass.gov/orgs/division-of-fisheries-and-wildlife)
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+**Links**
 
-## Type Support for `.vue` Imports in TS
+Report and Output Datasets: [10.5281/zenodo.8145195](https://dx.doi.org/10.5281/zenodo.8145195)  
+Model Source Code: [@walkerjeffd/masswildlife-mastath](https://github.com/walkerjeffd/masswildlife-mastath)  
+Website Source Code: [@walkerjeffd/masswildlife-mastath-explorer](https://github.com/walkerjeffd/masswildlife-mastath-explorer) (this repo)
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+## Overview
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+This repo contains the source code of an interactive data visualization tool for exploring climate change impacts on stream temperature and thermal habitats across Massachusetts. This tool is part of the MA Stream Temperature and Thermal Habitat (MASTATH) project, for which the report is available here:
 
-1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+> Walker, J.D. (2023). A Regional Stream Temperature Model for Assessing Climate Change Impacts on Thermal Habitat in Massachusetts. Technical report prepared for Massachusetts Division of Fisheries and Wildlife (MassWildlife). July 13, 2023. DOI: [10.5281/zenodo.8145195](https://dx.doi.org/10.5281/zenodo.8145195)
 
-## Customize configuration
+This web application was developed using vue3, vuetify, highcharts, leaflet and vite.
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+## Data Files
 
-## Project Setup
+The datasets for this web app are generated as part of the model code for the project, which is available here: [@walkerjeffd/masswildlife-mastath](https://github.com/walkerjeffd/masswildlife-mastath)
+
+Two output files for the web app should be copied from the `./data/output/app` directory of the model repo, to the `./public/data` directory of this repo. These files include:
+
+- `basins.geojson`: GeoJSON file of HUC8 basins
+- `flowlines.geojson`: GeoJSON file of NHDPlusV2 flowlines with attributes containing projected stream temperatures under baseline and future climate scenarios
+
+## Development
+
+To run the app locally, clone this repo and run the following commands in the terminal:
+
+### Project Setup
 
 ```sh
 npm install
@@ -39,30 +51,12 @@ npm run dev
 npm run build
 ```
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
+### Deploy to Production server
 
 ```sh
-npm run test:unit
+npm run deploy
 ```
 
-### Run End-to-End Tests with [Cypress](https://www.cypress.io/)
+## License
 
-```sh
-npm run test:e2e:dev
-```
-
-This runs the end-to-end tests against the Vite development server.
-It is much faster than the production build.
-
-But it's still recommended to test the production build with `test:e2e` before deploying (e.g. in CI environments):
-
-```sh
-npm run build
-npm run test:e2e
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (see `LICENSE`)

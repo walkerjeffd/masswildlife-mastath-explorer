@@ -43,7 +43,7 @@
                   </div>
 
                   <div class="mt-12 text-center">
-                    Report and dataset available here: <a href="https://doi.org/10.5281/zenodo.8145195">doi:10.5281/zenodo.8145195</a>
+                    Report and output dataset available at <a href="https://doi.org/10.5281/zenodo.8145195">DOI:10.5281/zenodo.8145195</a>
                   </div>
                 </v-col>
               </v-row>
