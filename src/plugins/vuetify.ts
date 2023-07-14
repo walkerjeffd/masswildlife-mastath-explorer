@@ -9,9 +9,9 @@ import '../assets/main.scss'
 const theme = {
   dark: false,
   colors: {
-    primary: '#3288bd',
-    secondary: '#66c2a6',
-    accent: '#f46e43',
+    primary: '#2C7BB6',
+    secondary: '#abdaea',
+    accent: '#feae61',
   }
 }
 
@@ -29,9 +29,6 @@ export default createVuetify({
       mdi,
     }
   },
-  // theme: {
-  //   defaultTheme: 'dark'
-  // }
   theme: {
     defaultTheme: 'theme',
     themes: {

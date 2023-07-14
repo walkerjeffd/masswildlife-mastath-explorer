@@ -25,7 +25,6 @@ const links: Link[] = [
     <v-app-bar color="primary">
       <!-- <v-img src="@/assets/logo.png" max-height="80%" max-width="200" /> -->
       <v-app-bar-title text="MA Stream Temperature and Thermal Habitat Explorer" class="text-h5">
-        <span class="text-button font-size-smaller ml-1 text-blue-lighten-3 font-weight-bold">BETA</span>
       </v-app-bar-title>
       <v-tabs
         color="primary"
