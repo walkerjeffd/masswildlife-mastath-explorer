@@ -13,7 +13,7 @@
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
-    "deploy": "npm run build && rsync -zav dist/ jeff@walkerenvres.com:/var/www/dev/masswildlife --delete"
+    "deploy": "npm run build && aws s3 sync dist/ s3://walkerenvres-apps-mastath/mastath --delete"
   },
   "dependencies": {
     "@vue-leaflet/vue-leaflet": "^0.10.1",
