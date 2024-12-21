@@ -2,7 +2,7 @@ MA Stream Temperature and Thermal Habitat Explorer
 ==================================================
 
 Prepared by: Jeffrey D Walker, PhD (<jeff@walkerenvres.com>, [Walker Environmental Research LLC](https://walkerenvres.com))  
-For: [MA Division of Fisheries and Wildlife (MassWildlife)](https://www.mass.gov/orgs/division-of-fisheries-and-wildlife)
+In Collaboration With: [MA Division of Fisheries and Wildlife (MassWildlife)](https://www.mass.gov/orgs/division-of-fisheries-and-wildlife)
 
 **Links**
 

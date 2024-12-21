@@ -17,7 +17,7 @@
 
             <div class="text-h5">A Regional Stream Temperature Model for Assessing Climate Change Impacts on Thermal Habitat in Massachusetts</div>
 
-            <div class="text-subtitle-1">Prepared by Jeffrey D. Walker, PhD (<a href="https://walkerenvres.com">Walker Environmental Research LLC</a>) for <a href="https://www.mass.gov/orgs/division-of-fisheries-and-wildlife">MA Division of Fisheries and Wildlife (MassWildlife)</a></div>
+            <div class="text-subtitle-1">Prepared by Jeffrey D. Walker, PhD (<a href="https://walkerenvres.com">Walker Environmental Research LLC</a>) in collaboration with <a href="https://www.mass.gov/orgs/division-of-fisheries-and-wildlife">MA Division of Fisheries and Wildlife (MassWildlife)</a></div>
             <div class="text-subtitle-1">July 13, 2023</div>
 
             <v-alert color="accent" class="my-8 text-body-1" prominent>
@@ -39,7 +39,7 @@
 
             <div class="text-h5 mt-8">Study Objectives</div>
             <p class="font-size-larger">
-              The primary objective of this study was to generate projections of changes in stream temperature and thermal habitat (i.e., cold water fish habitat) due to climate change across the state of Massachusetts. To achieve this, statistical and machine learning models were developed for predicting stream temperatures based on air temperature and various landscape metrics (e.g., land use, elevation, drainage area). The model was then used in conjunction with climate change projections of air temperature increases to estimate the potentional changes in stream temperatures and thermal habitat across the state. The results of this study are made available through this web-based tool to inform conservation and management decisions related to the protection of coldwater fish habitat in Massachusetts.
+              The primary objective of this study was to generate projections of changes in stream temperature and thermal habitat (i.e., cold water fish habitat) due to climate change across the state of Massachusetts. To achieve this, statistical and machine learning models were developed for predicting stream temperatures based on air temperature and various landscape metrics (e.g., land use, elevation, drainage area). The model was then used in conjunction with climate change projections of air temperature increases to estimate the potential changes in stream temperatures and thermal habitat across the state. The results of this study are made available through this web-based tool to inform conservation and management decisions related to the protection of coldwater fish habitat in Massachusetts.
             </p>
 
             <div class="text-h5 mt-8">Data Sources</div>
@@ -86,7 +86,7 @@
 
             <div class="text-h5 mt-8">Funding</div>
             <p class="font-size-larger mb-4">
-              This study was performed by Jeffrey D Walker, PhD of <a href="https://walkerenvres.com">Walker Environmental Research LLC</a> under contract to <a href="https://www.mass.gov/orgs/division-of-fisheries-and-wildlife">MA Division of Fisheries and Wildlife (MassWildlife)</a>. Funding was provided by the <a href="https://resilientma.mass.gov/shmcap-portal">2018 State Hazard Mitigation and Climate Adaptation Plan (SHMCAP)</a> for Massachusetts.
+              This study was performed by Jeffrey D Walker, PhD of <a href="https://walkerenvres.com">Walker Environmental Research LLC</a> in collaboration with <a href="https://www.mass.gov/orgs/division-of-fisheries-and-wildlife">MA Division of Fisheries and Wildlife (MassWildlife)</a>. Funding was provided by the <a href="https://resilientma.mass.gov/shmcap-portal">2018 State Hazard Mitigation and Climate Adaptation Plan (SHMCAP)</a> for Massachusetts.
             </p>
           </v-sheet>
         </v-col>

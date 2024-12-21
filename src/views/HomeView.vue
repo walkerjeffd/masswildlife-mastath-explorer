@@ -56,7 +56,7 @@
             <v-divider class="my-4"></v-divider>
 
             <div class="mt-4 text-center">
-              Project completed by <a href="https://walkerenvres.com">Walker Environmental Research LLC</a> for <a href="https://www.mass.gov/orgs/division-of-fisheries-and-wildlife">MA Division of Fisheries and Wildlife (MassWildlife)</a> with funding from the <a href="https://resilientma.mass.gov/shmcap-portal">2018 State Hazard Mitigation and Climate Adaptation Plan (SHMCAP)</a>
+              Project by <a href="https://walkerenvres.com">Walker Environmental Research LLC</a> in collaboration with <a href="https://www.mass.gov/orgs/division-of-fisheries-and-wildlife">MA Division of Fisheries and Wildlife (MassWildlife)</a> with funding from the <a href="https://resilientma.mass.gov/shmcap-portal">2018 State Hazard Mitigation and Climate Adaptation Plan (SHMCAP)</a>
             </div>
           </v-sheet>
         </v-col>
